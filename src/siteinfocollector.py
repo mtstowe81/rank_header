@@ -22,14 +22,12 @@ class SiteInfoCollector:
         '''
         Get the top N sites from the provided data file.
         '''
-        sites = []
         with open(data_path, "r") as data_file:
-            for idx,line in enumerate(data_file):
-                site = line.split(',')[1].strip()
-                sites.append('http://www.' + site)
-                if idx == (num_sites-1):
+            for idx,line in enumerate(data_file, 1):
+                yield 'http://www.' + line.split(',')[1].strip()
+                
+                if idx == num_sites:
                     break
-        return sites
 
     @staticmethod
     @backoff.on_exception(backoff.expo, (asyncio.TimeoutError), max_time=120)

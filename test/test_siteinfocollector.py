@@ -3,7 +3,7 @@ from src.siteinfocollector import SiteInfoCollector
 
 class TestSiteInfoCollector(): 
     def test_get_top_sites(self):
-        sites = SiteInfoCollector.get_top_sites('./data/top-1m.csv', 2)
+        sites = list(SiteInfoCollector.get_top_sites('./data/top-1m.csv', 2))
         
         assert len(sites) == 2
         assert sites[0] == 'http://www.google.com'
@@ -11,7 +11,7 @@ class TestSiteInfoCollector():
 
     @pytest.mark.asyncio
     async def test_get_site_info_async(self):
-        sites = await SiteInfoCollector.get_site_info_async('./data/top-1m.csv', 2, 2, 30)
+        sites = list(await SiteInfoCollector.get_site_info_async('./data/top-1m.csv', 2, 2, 30))
         
         assert len(sites) == 2
         assert sites[0]['site'] == 'http://www.google.com'

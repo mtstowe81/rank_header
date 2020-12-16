@@ -22,15 +22,12 @@ async def main_async(data_path, num_top, num_sites, display_graph, http_concurre
     start_time = time.time()
     site_info = await SiteInfoCollector.get_site_info_async(data_path, num_sites, http_concurrency, http_timeout)
 
-    # filter out sites that returned no status (due to timeout or other error)
-    # so that they do not skew the results.
-    filtered_site_info = list(filter(lambda elem: elem['status'] != None,site_info))
-
-    logging.info("received {0} results from the {1} sites in the list".format(len(filtered_site_info), len(site_info)))
-    
-    stats = SiteInfoAnalyzer.get_site_stats(filtered_site_info, num_top)
     duration = time.time() - start_time
-
+    logging.info("-- gather duration: {0}".format(duration))
+    
+    stats = SiteInfoAnalyzer.get_site_stats(site_info, num_top)
+    
+    duration = time.time() - start_time
     logging.info("--- analysis duration: {0} seconds ---".format(duration))
     
     if display_graph:
