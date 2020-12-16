@@ -1,0 +1,8 @@
+aiohttp
+asyncio
+backoff
+matplotlib
+argparse
+pytest
+pytest-asyncio
+pytest-cov
