@@ -1,65 +1,60 @@
 import pytest
 from src.siteinfoanalyzer import SiteInfoAnalyzer
 
-class TestSiteInfoAnalyzer(): 
-    def test_get_site_stats(self):
+class TestSiteInfoAnalyzer():
+    @pytest.fixture
+    def num_top(self):
+        return 2
+
+    @pytest.fixture
+    def sites(self):
         sites = [
             {
                 'site' : 'www.abc.com',
-                'headers': {
-                    'foo' : 'bar',
-                    'bing' : 'bam'
-                },
-                'status' : None
+                'headers': ['foo', 'bing'],
+                'status' : 200
             },
             {
                 'site' : 'www.def.com',
-                'headers': {
-                    'foo' : 'bar',
-                    'extra1' : 'extra1'
-                },
-                'status' : None
+                'headers': ['foo', 'extra1'],
+                'status' : 200
             },
             {
                 'site' : 'www.ghi.com',
-                'headers': {
-                    'foo' : 'bar',
-                },
-                'status' : None
+                'headers': ['foo'],
+                'status' : 200
             },
             {
                 'site' : 'www.jkl.com',
-                'headers': {
-                    'bing' : 'bam'
-                },
-                'status' : None
+                'headers': ['bing'],
+                'status' : 200
             },
             {
                 'site' : 'www.mno.com',
-                'headers': {
-                    'foo' : 'bar',
-                    'bing' : 'bam',
-                    'extra2' : 'extra2'
-                },
-                'status' : None
+                'headers': ['foo', 'bing', 'extra2'],
+                'status' : 200
             }
         ]
-        num_top = 2
+        return sites
 
-        results = SiteInfoAnalyzer.get_site_stats(sites, num_top)
-
-        assert 'foo' in results
-        assert 'bing' in results
-        assert len(results) == 2
-
-        foo = results['foo']
-        assert foo['rank'] == 1
-        assert foo['total_occurrences'] == 4
-        assert foo['total_site_occurrences'] == 4
-        assert foo['percent_site_occurrences'] == 80
-
-        bing = results['bing']
-        assert bing['rank'] == 2
-        assert bing['total_occurrences'] == 3
-        assert bing['total_site_occurrences'] == 3
-        assert bing['percent_site_occurrences'] == 60
+    @pytest.fixture
+    def expected_stats(self):
+        stats = {
+            'foo': {
+                'rank': 1,
+                'total_occurrences': 4,
+                'total_site_occurrences': 4,
+                'percent_site_occurrences': 80.0
+            },
+            'bing': {
+                'rank': 2,
+                'total_occurrences': 3,
+                'total_site_occurrences': 3,
+                'percent_site_occurrences': 60.0
+            }
+        }
+        return stats
+    
+    def test_get_site_stats(self, sites, num_top, expected_stats):
+        actual_stats = SiteInfoAnalyzer.get_site_stats(sites, num_top)
+        assert actual_stats == expected_stats

@@ -4,6 +4,7 @@ import time
 from matplotlib import pyplot as plt
 import numpy as np
 from itertools import zip_longest
+import pandas as pd
 
 class SiteInfoAnalyzer:
     '''
@@ -18,52 +19,41 @@ class SiteInfoAnalyzer:
         - Gets the top 10 response headers that appeared for all the sites.
         - Then for each of the top 10 response headers get the percentage of sites they occurred in
         '''
-        logging.info("getting site headers stats...")
-        global_header_rank = {  }
-        for site_response in sites:
-            if site_response != None:
-                if 'headers' in site_response and site_response['headers'] != None:
-                    # track the occurrences of a header within a site
-                    # some headers show up multiple times, which can skew results
-                    site_header_rank = { }
-                    for header in site_response['headers']:
-                        if header in site_header_rank:
-                            site_header_rank[header] += 1
-                        else:
-                            site_header_rank[header] = 1
+        
+        top_sites_df = pd.DataFrame(sites)
+        top_sites_df = top_sites_df[top_sites_df.status != None]
+        top_sites_df = top_sites_df.explode('headers')
 
-                    # track the occurrences of a header for all sites
-                    # total occurrences = sum of all occurrences (including multiple occurrences of each site)
-                    # total site occurrences = the count of sites a header has occurred in
-                    for header in site_header_rank:
-                        if header in global_header_rank:
-                            global_header_rank[header]['total_site_occurrences'] += 1
-                            global_header_rank[header]['total_occurrences'] += site_header_rank[header]
-                        else:
-                            global_header_rank[header] = { 'total_site_occurrences' : 1, 'total_occurrences' : site_header_rank[header] }
+        top_headers_unique_df = (top_sites_df
+            .drop_duplicates(subset=['site', 'headers'])
+            .groupby(by=["headers"])
+            .size()
+            .reset_index(name='total_site_occurrences'))
 
-        # sort the headers DESC so that we have the highest occurrences first
-        sorted_headers = sorted(global_header_rank.items(), key=lambda x: int(x[1]['total_site_occurrences']), reverse=True)
+        top_headers_df = (top_sites_df
+            .groupby(by=["headers"])
+            .size()
+            .reset_index(name='total_occurrences'))
 
-        logging.info("calculating top headers stats...")
-        top_stats = { }
-        for idx,header_info in enumerate(sorted_headers):
-            rank = idx+1
-            header_name = header_info[0]
-            total_site_occurrences = header_info[1]['total_site_occurrences']
-            total_occurrences = header_info[1]['total_occurrences']
-            percent = (total_site_occurrences/len(sites)) * 100
-            logging.info("rank: {0} | header={1} | total_occurrences={2} | total_site_occurrences={3} | percent_site_occurrences={4}".format(rank, header_name, total_occurrences, total_site_occurrences, percent))
-            top_stats[header_name] = {
-                'rank' : rank,
-                'total_occurrences' : total_occurrences,
-                'total_site_occurrences' : total_site_occurrences,
-                'percent_site_occurrences' : percent
-            }
-            if idx == (num_top-1):
-                break
+        stats_df = (pd
+            .merge(top_headers_unique_df, top_headers_df, on='headers')
+            .sort_values(['total_site_occurrences', 'total_occurrences'],ascending=[False, False])
+            .head(num_top)
+            .reset_index(drop=True))
+        
+        num_sites = len(sites)
+        stats_df['percent_sites'] = stats_df.apply(lambda row: ((row.total_site_occurrences/num_sites)*100), axis=1)
+        stats_dict = (
+            { value['headers']:
+                {   
+                    'rank': key+1,
+                    'total_occurrences' : value['total_occurrences'],
+                    'total_site_occurrences' : value['total_site_occurrences'],
+                    'percent_site_occurrences' : value['percent_sites']
+                }
+                for (key,value) in stats_df.to_dict('index').items() })
 
-        return top_stats
+        return stats_dict
 
     @staticmethod
     def display_stats(stats):

@@ -45,7 +45,7 @@ class SiteInfoCollector:
         async with session.get(site) as response:
             duration = time.time() - start_time
             logging.debug("received site {0} {1}: {2} seconds".format(site, response.status, duration))
-            return { 'site': site, 'status' : response.status, 'headers' : response.headers }
+            return { 'site': site, 'status' : response.status, 'headers' : list(response.headers.keys()) }
 
     @staticmethod
     async def get_site_response_headers_async(session, site, sem):
@@ -75,7 +75,8 @@ class SiteInfoCollector:
         '''
         # using a semaphore as there appears to be some issue in aiohttp with
         # multiple concurrent requests.  the semaphore is used to limit the number
-        # of requests we attempt to make at once.
+        # of requests we attempt to make at once until I can figure out what
+        # is going on here.
         logging.info("getting site headers...")
         sem = asyncio.Semaphore(concurrency)
         timeout = aiohttp.ClientTimeout(total=timeout)

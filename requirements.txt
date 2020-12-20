@@ -6,3 +6,4 @@ argparse
 pytest
 pytest-asyncio
 pytest-cov
+pandas
