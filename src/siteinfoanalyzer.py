@@ -1,23 +1,36 @@
-import sys
-import logging
-import time
-from matplotlib import pyplot as plt
-import numpy as np
-from itertools import zip_longest
 import pandas as pd
 
 class SiteInfoAnalyzer:
     '''
     Get the top N sites stats from the provided data file.
     '''
+
     @staticmethod
     def get_site_stats(sites, num_top):
         '''
         Get headers stats from sites.
 
-        Analyzes HTTP responses from the top 1000 sites in that list. 
-        - Gets the top 10 response headers that appeared for all the sites.
-        - Then for each of the top 10 response headers get the percentage of sites they occurred in
+        Analyzes HTTP responses from the sites provided. 
+        - Gets the num_top response headers that appeared for all the sites.
+        - Then for each of the num_top response headers get the percentage of sites they occurred in.
+
+        Parameters
+        ----------
+        sites: str[]
+            List of sites to analyze headers for.
+        num_top: int
+            Top number of headers to analyze.
+
+        Returns
+        -------
+        dictionary
+            A dictionary with the following key/value structure
+            header_name : {
+                'rank': int,
+                'total_occurrences' : int,
+                'total_site_occurrences' : int,
+                'percent_site_occurrences' : int
+            }
         '''
         
         top_sites_df = pd.DataFrame(sites)
@@ -54,25 +67,3 @@ class SiteInfoAnalyzer:
                 for (key,value) in stats_df.to_dict('index').items() })
 
         return stats_dict
-
-    @staticmethod
-    def display_stats(stats):
-        topHeaders = []
-        topHeaderPercents = []
-        for stat in stats:
-            topHeaders.append(stat)
-            topHeaderPercents.append(stats[stat]['percent_site_occurrences'])
-
-        # reverse into DESC order
-        topHeaders.reverse()
-        topHeaderPercents.reverse()
-
-        plt.style.use('ggplot')
-        plt.figure(figsize=(15,5))
-        y_pos = np.arange(len(topHeaders))
-        plt.barh(y_pos, topHeaderPercents, color='green')
-        plt.ylabel("Header")
-        plt.xlabel("Percent Sites")
-        plt.title("Top 10 Headers with Percent Site Occurrence")
-        plt.yticks(y_pos, topHeaders)
-        plt.show()

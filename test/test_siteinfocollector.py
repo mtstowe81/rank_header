@@ -7,11 +7,6 @@ class TestSiteInfoCollector():
         return 2
     
     @pytest.fixture
-    def expected_sites(self):
-        sites = ['http://www.google.com', 'http://www.youtube.com']
-        return sites
-
-    @pytest.fixture
     def expected_sites_info(self):
         sites_info = [{
             'site': 'http://www.google.com',
@@ -23,10 +18,6 @@ class TestSiteInfoCollector():
             'headers': ['Content-Type', 'X-Content-Type-Options', 'Cache-Control', 'Pragma', 'Expires', 'Date', 'X-Frame-Options', 'Strict-Transport-Security', 'P3P', 'Content-Encoding', 'Server', 'X-XSS-Protection', 'Set-Cookie', 'Set-Cookie', 'Alt-Svc', 'Transfer-Encoding']
         }]
         return sites_info
-
-    def test_get_top_sites(self, num_top, expected_sites):
-        actual_sites = list(SiteInfoCollector.get_top_sites('./data/top-1m.csv', num_top))
-        assert actual_sites == expected_sites
 
     @pytest.mark.asyncio
     async def test_get_site_info_async(self, num_top, expected_sites_info):

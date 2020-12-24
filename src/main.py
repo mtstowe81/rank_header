@@ -11,6 +11,8 @@ import argparse
 import asyncio
 from siteinfocollector import SiteInfoCollector
 from siteinfoanalyzer import SiteInfoAnalyzer
+from siteinfodisplay import SiteInfoDisplay
+from siteinfotimer import SiteInfoTimer
 
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=logging.INFO)
 logging.getLogger('backoff').setLevel(logging.FATAL)
@@ -29,22 +31,19 @@ async def main_async(data_path, num_top, num_sites, display_graph, http_concurre
     '''
     Main routine is main entry point of program.
     '''
-    start_time = time.time()
-    site_info = await SiteInfoCollector.get_site_info_async(data_path, num_sites, http_concurrency, http_timeout)
+    with SiteInfoTimer() as program_timer:
+        with SiteInfoTimer() as gather_timer:
+            site_info = await SiteInfoCollector.get_site_info_async(data_path, num_sites, http_concurrency, http_timeout)
+        logging.info("--- collect duration: {0}".format(gather_timer.interval))
+        
+        with SiteInfoTimer() as analysis_timer:
+            stats = SiteInfoAnalyzer.get_site_stats(site_info, num_top)
+        logging.info("--- analysis duration: {0} seconds ---".format(analysis_timer.interval))
+        
+        if display_graph:
+            SiteInfoDisplay.display_stats(stats)
 
-    duration = time.time() - start_time
-    logging.info("-- gather duration: {0}".format(duration))
-    
-    stats = SiteInfoAnalyzer.get_site_stats(site_info, num_top)
-
-    duration = time.time() - start_time
-    logging.info("--- analysis duration: {0} seconds ---".format(duration))
-    
-    if display_graph:
-        SiteInfoAnalyzer.display_stats(stats)
-
-    duration = time.time() - start_time
-    logging.info("--- program duration: {0} seconds ---".format(duration))
+    logging.info("--- program duration: {0} seconds ---".format(program_timer.interval))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Calculate top 10 header stats', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
