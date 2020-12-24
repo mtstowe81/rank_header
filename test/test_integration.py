@@ -104,10 +104,10 @@ class TestIntegration():
         }]
         return sites
 
-    @pytest.mark.asyncio
-    async def test_get_site_info_async(self, expected_stats, expected_sites, num_top, num_sites):
-        actual_sites = await SiteInfoCollector.get_site_info_async('./data/top-1m.csv', num_sites, 2, 30)
-        assert actual_sites == expected_sites
-
-        actual_stats = SiteInfoAnalyzer.get_site_stats(actual_sites, num_top)
-        assert actual_stats == expected_stats
+    # Usually fails after a period of time as the websites change.
+    #@pytest.mark.asyncio
+    #async def test_get_site_info_async(self, expected_stats, expected_sites, num_top, num_sites):
+    #    actual_sites = await SiteInfoCollector.get_site_info_async('./data/top-1m.csv', num_sites, 2, 30)
+    #    assert actual_sites == expected_sites
+    #    actual_stats = SiteInfoAnalyzer.get_site_stats(actual_sites, num_top)
+    #    assert actual_stats == expected_stats
