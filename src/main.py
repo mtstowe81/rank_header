@@ -9,10 +9,10 @@ import time
 import logging
 import argparse
 import asyncio
-from ..core.siteinfocollector import SiteInfoCollector
-from ..core.siteinfoanalyzer import SiteInfoAnalyzer
-from ..core.siteinfotimer import SiteInfoTimer
-from siteinfodisplay import SiteInfoDisplay
+from core.siteinfocollector import SiteInfoCollector
+from core.siteinfoanalyzer import SiteInfoAnalyzer
+from core.siteinfotimer import SiteInfoTimer
+from core.siteinfodisplay import SiteInfoDisplay
 
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=logging.INFO)
 logging.getLogger('backoff').setLevel(logging.FATAL)

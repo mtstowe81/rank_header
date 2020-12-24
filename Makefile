@@ -10,4 +10,4 @@ test:
 	pytest ./test
 
 run:
-	python ./src/cli/main.py --data_path "./data/top-1m.csv" --num_sites 2
+	python ./src/main.py --data_path "./data/top-1m.csv"
