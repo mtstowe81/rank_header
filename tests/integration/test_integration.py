@@ -1,6 +1,6 @@
 import pytest
-from rankheader.siteinfocollector import SiteInfoCollector
-from rankheader.siteinfoanalyzer import SiteInfoAnalyzer
+from rankheader.core.siteinfocollector import SiteInfoCollector
+from rankheader.core.siteinfoanalyzer import SiteInfoAnalyzer
 
 class TestIntegration(): 
     @pytest.fixture

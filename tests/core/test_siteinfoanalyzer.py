@@ -1,5 +1,5 @@
 import pytest
-from rankheader.siteinfoanalyzer import SiteInfoAnalyzer
+from rankheader.core.siteinfoanalyzer import SiteInfoAnalyzer
 
 class TestSiteInfoAnalyzer():
     @pytest.fixture

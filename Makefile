@@ -7,7 +7,7 @@ init:
 	pip install -r requirements.txt
 
 test:
-	pytest ./test
+	pytest ./tests
 
 run:
-	python ./src/main.py --data_path "./data/top-1m.csv"
+	python ./rankheader/main.py --data_path "./data/top-1m.csv"

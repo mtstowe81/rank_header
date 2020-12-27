@@ -1,5 +1,5 @@
 import pytest
-from rankheader.siteinfocollector import SiteInfoCollector
+from rankheader.core.siteinfocollector import SiteInfoCollector
 
 class TestSiteInfoCollector(): 
     @pytest.fixture
