@@ -1,7 +1,7 @@
 import pytest
-from rankheader.core.siteinfoanalyzer import SiteInfoAnalyzer
+from rankheader.core.analyze import Analyzer
 
-class TestSiteInfoAnalyzer():
+class TestAnalyzer():
     @pytest.fixture
     def num_top(self):
         return 2
@@ -56,5 +56,5 @@ class TestSiteInfoAnalyzer():
         return stats
     
     def test_get_site_stats(self, sites, num_top, expected_stats):
-        actual_stats = SiteInfoAnalyzer.get_site_stats(sites, num_top)
+        actual_stats = Analyzer.get_site_stats(sites, num_top)
         assert actual_stats == expected_stats

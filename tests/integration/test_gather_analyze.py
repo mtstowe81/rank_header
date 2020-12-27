@@ -1,8 +1,8 @@
 import pytest
-from rankheader.core.siteinfocollector import SiteInfoCollector
-from rankheader.core.siteinfoanalyzer import SiteInfoAnalyzer
+from rankheader.core.gather import Gatherer
+from rankheader.core.analyze import Analyzer
 
-class TestIntegration(): 
+class TestGatherAnalyze(): 
     @pytest.fixture
     def num_top(self):
         return 7
@@ -105,9 +105,10 @@ class TestIntegration():
         return sites
 
     # Usually fails after a period of time as the websites change.
-    #@pytest.mark.asyncio
-    #async def test_get_site_info_async(self, expected_stats, expected_sites, num_top, num_sites):
-    #    actual_sites = await SiteInfoCollector.get_site_info_async('./data/top-1m.csv', num_sites, 2, 30)
-    #    assert actual_sites == expected_sites
-    #    actual_stats = SiteInfoAnalyzer.get_site_stats(actual_sites, num_top)
-    #    assert actual_stats == expected_stats
+    @pytest.mark.asyncio
+    @pytest.mark.skipif(True, reason="Typically fails due to inconsistent site results.")
+    async def test_get_site_info_async(self, expected_stats, expected_sites, num_top, num_sites):
+        actual_sites = await Gatherer.get_site_info_async('./data/top-1m.csv', num_sites, 2, 30)
+        assert actual_sites == expected_sites
+        actual_stats = Analyzer.get_site_stats(actual_sites, num_top)
+        assert actual_stats == expected_stats

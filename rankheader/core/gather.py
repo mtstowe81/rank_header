@@ -5,7 +5,7 @@ import asyncio
 import logging
 import time
 
-class SiteInfoCollector:
+class Gatherer:
     '''
     Get the headers for top N sites from the provided data file.
     '''
@@ -32,8 +32,8 @@ class SiteInfoCollector:
             A dictionary with the following key/value structure
             { 'site': str, 'status' : [int|None], 'headers' : [str[]|None] }
         '''
-        sites = SiteInfoCollector.__get_top_sites(data_path, num_sites)
-        return await SiteInfoCollector.__get_all_site_response_headers_async(sites, http_concurrency, http_timeout)
+        sites = Gatherer.__get_top_sites(data_path, num_sites)
+        return await Gatherer.__get_all_site_response_headers_async(sites, http_concurrency, http_timeout)
 
     @staticmethod
     def __get_top_sites(data_path, num_sites):
@@ -67,7 +67,7 @@ class SiteInfoCollector:
         async with sem:
             logging.debug("requesting {0}".format(site))
             try:
-                return await SiteInfoCollector.__get_site_response_headers_async_with_backoff(session, site)
+                return await Gatherer.__get_site_response_headers_async_with_backoff(session, site)
             except:
                 logging.error("Unexpected error for {0}: {1}".format(site, sys.exc_info()[0]))
                 return { 'site': site, 'status' : None, 'headers' : None }
@@ -86,4 +86,4 @@ class SiteInfoCollector:
         timeout = aiohttp.ClientTimeout(total=timeout)
         connector = aiohttp.TCPConnector(ssl=False, limit=concurrency)
         async with aiohttp.ClientSession(connector=connector, timeout=timeout) as session:
-            return await asyncio.gather(*(SiteInfoCollector.__get_site_response_headers_async(session, site, sem) for site in sites))
+            return await asyncio.gather(*(Gatherer.__get_site_response_headers_async(session, site, sem) for site in sites))

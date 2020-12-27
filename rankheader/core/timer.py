@@ -1,6 +1,6 @@
 import time
 
-class SiteInfoTimer:
+class Timer:
     '''
     Timer for python operations.
 

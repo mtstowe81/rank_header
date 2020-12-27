@@ -1,7 +1,7 @@
 import pytest
-from rankheader.core.siteinfocollector import SiteInfoCollector
+from rankheader.core.gather import Gatherer
 
-class TestSiteInfoCollector(): 
+class TestGatherer(): 
     @pytest.fixture
     def num_top(self):
         return 2
@@ -21,6 +21,6 @@ class TestSiteInfoCollector():
 
     @pytest.mark.asyncio
     async def test_get_site_info_async(self, num_top, expected_sites_info):
-        actual_sites_info = list(await SiteInfoCollector.get_site_info_async('./data/top-1m.csv', num_top, 2, 30))
+        actual_sites_info = list(await Gatherer.get_site_info_async('./data/top-1m.csv', num_top, 2, 30))
         assert actual_sites_info == expected_sites_info
         

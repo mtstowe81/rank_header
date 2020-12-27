@@ -9,10 +9,10 @@ import time
 import logging
 import argparse
 import asyncio
-from core.siteinfocollector import SiteInfoCollector
-from core.siteinfoanalyzer import SiteInfoAnalyzer
-from core.siteinfotimer import SiteInfoTimer
-from core.siteinfodisplay import SiteInfoDisplay
+from core.gather import Gatherer
+from core.analyze import Analyzer
+from core.timer import Timer
+from core.display import Display
 
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=logging.INFO)
 logging.getLogger('backoff').setLevel(logging.FATAL)
@@ -31,17 +31,17 @@ async def main_async(data_path, num_top, num_sites, display_graph, http_concurre
     '''
     Main routine is main entry point of program.
     '''
-    with SiteInfoTimer() as program_timer:
-        with SiteInfoTimer() as gather_timer:
-            site_info = await SiteInfoCollector.get_site_info_async(data_path, num_sites, http_concurrency, http_timeout)
+    with Timer() as program_timer:
+        with Timer() as gather_timer:
+            site_info = await Gatherer.get_site_info_async(data_path, num_sites, http_concurrency, http_timeout)
         logging.info("--- collect duration: {0}".format(gather_timer.interval))
         
-        with SiteInfoTimer() as analysis_timer:
-            stats = SiteInfoAnalyzer.get_site_stats(site_info, num_top)
+        with Timer() as analysis_timer:
+            stats = Analyzer.get_site_stats(site_info, num_top)
         logging.info("--- analysis duration: {0} seconds ---".format(analysis_timer.interval))
         
         if display_graph:
-            SiteInfoDisplay.display_stats(stats)
+            Display.display_stats(stats)
 
     logging.info("--- program duration: {0} seconds ---".format(program_timer.interval))
 

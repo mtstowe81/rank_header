@@ -1,6 +1,6 @@
 import pandas as pd
 
-class SiteInfoAnalyzer:
+class Analyzer:
     '''
     Get the top N sites stats from the provided data file.
     '''

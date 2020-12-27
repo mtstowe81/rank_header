@@ -2,7 +2,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 from collections import deque
 
-class SiteInfoDisplay:
+class Display:
     '''
     Displays the top N sites stats from the provided data file.
     '''
