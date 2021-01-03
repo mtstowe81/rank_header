@@ -42,22 +42,26 @@ class Gatherer:
         '''
         with open(data_path, "r") as data_file:
             for idx,line in enumerate(data_file, 1):
-                yield 'http://www.' + line.split(',')[1].strip()
+                yield 'https://www.' + line.split(',')[1].strip()
+                #yield line.split(',')[1].strip()
                 
                 if idx == num_sites:
                     break
 
     @staticmethod
-    @backoff.on_exception(backoff.expo, (asyncio.TimeoutError), max_time=120)
+    # Disabled retry/backoff pattern for now as this unjustly increases the
+    # execution time of the application for dead endpoints that exist but are
+    # just unresponsive.
+    #@backoff.on_exception(backoff.expo, asyncio.TimeoutError, max_tries=2, max_time=60)
     async def __get_site_response_headers_async_with_backoff(session, site):
         '''
         Get single site response headers asynchronously with backoff retry pattern.
         '''
         start_time = time.time()
-        async with session.get(site) as response:
+        async with session.head(site) as response:
             duration = time.time() - start_time
             logging.debug("received site {0} {1}: {2} seconds".format(site, response.status, duration))
-            return { 'site': site, 'status' : response.status, 'headers' : list(response.headers.keys()) }
+            return { 'site': site, 'status' : response.status, 'headers' : list(response.headers.keys()), 'error' : False }
 
     @staticmethod
     async def __get_site_response_headers_async(session, site, sem):
@@ -70,7 +74,7 @@ class Gatherer:
                 return await Gatherer.__get_site_response_headers_async_with_backoff(session, site)
             except:
                 logging.error("Unexpected error for {0}: {1}".format(site, sys.exc_info()[0]))
-                return { 'site': site, 'status' : None, 'headers' : None }
+                return { 'site': site, 'status' : None, 'headers' : None, 'error' : True }
 
     @staticmethod
     async def __get_all_site_response_headers_async(sites, concurrency, timeout):

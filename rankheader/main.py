@@ -52,8 +52,8 @@ if __name__ == '__main__':
     parser.add_argument('--num_headers', default=10, type=int, help='Number of headers to take as top rank')
     parser.add_argument('--num_sites', default=1000, type=int, help='Number of sites to analyze')
     parser.add_argument('--display_graph', default='True', type=str2bool, const=True, nargs='?', help='Display the graph', choices=[True, False])
-    parser.add_argument('--http_concurrency', default=20, type=int, help='Number of concurrent requests')
-    parser.add_argument('--http_timeout', default=30, type=int, help='Request timeout (sec)')
+    parser.add_argument('--http_concurrency', default=50, type=int, help='Number of concurrent requests')
+    parser.add_argument('--http_timeout', default=10, type=int, help='Request timeout (sec)')
 
     arg = parser.parse_args()
 

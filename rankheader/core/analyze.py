@@ -34,7 +34,7 @@ class Analyzer:
         '''
         
         top_sites_df = pd.DataFrame(sites)
-        top_sites_df = top_sites_df[top_sites_df.status != None]
+        top_sites_df = top_sites_df[top_sites_df.error == False]
         top_sites_df = top_sites_df.explode('headers')
 
         top_headers_unique_df = (top_sites_df
@@ -65,5 +65,14 @@ class Analyzer:
                     'percent_site_occurrences' : value['percent_sites']
                 }
                 for (key,value) in stats_df.to_dict('index').items() })
+
+        index = df.index
+        number_of_rows = len(index)
+
+        summary = {
+            'total_sites' : num_sites,
+            'sample size':  
+            'header_stats': stats_dict
+        }
 
         return stats_dict
