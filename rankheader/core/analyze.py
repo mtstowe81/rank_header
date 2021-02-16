@@ -7,8 +7,35 @@ class Analyzer:
 
     @staticmethod
     def get_site_report(sites):
-        # TODO
-        pass
+        '''
+        Get site stats from sites.
+
+        Analyzes HTTP responses from the sites provided. 
+        - Gets the count of each response type that was observed.
+
+        Parameters
+        ----------
+        sites: str[]
+            List of sites to analyze results for.
+
+        Returns
+        -------
+        string
+            A string representing the analysis results for sites.
+            The format of the string provides the following stats:
+            - rank: integer representing rank (leftmost unlabeled column)
+            - result: type of the result (success, error, etc)
+            - total: the total of the result type
+        '''
+        sites_df = pd.DataFrame(sites)
+        sites_errors_df = (sites_df
+            .groupby(by=['result'])
+            .size()
+            .reset_index(name='total')
+            .sort_values(['total'],ascending=[False])
+            .reset_index(drop=True))
+        sites_errors_df.index += 1
+        return sites_errors_df.to_string()
 
     @staticmethod
     def get_header_report(sites, num_top):
@@ -37,9 +64,8 @@ class Analyzer:
             - total_occurrences: total occurrences of a header for all sites, including multiple occurrences per site
             - percent_sites: percent of site occurrences based on total_site_occurrences
         '''
-        
         top_sites_df = pd.DataFrame(sites)
-        top_sites_df = top_sites_df[top_sites_df.error == 'None']
+        top_sites_df = top_sites_df[top_sites_df.result == 'Success']
         top_sites_df = top_sites_df.explode('headers')
 
         top_headers_unique_df = (top_sites_df

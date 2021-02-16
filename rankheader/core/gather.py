@@ -53,10 +53,10 @@ class Gatherer:
         try:
             async with session.head(site) as response:
                 return { 
-                    'site': site, 'status' : response.status, 'headers' : list(response.headers.keys()), 'error' : 'None' }
+                    'site': site, 'status' : response.status, 'headers' : list(response.headers.keys()), 'result' : 'Success' }
         except Exception as e:
             logging.debug("Unexpected error for {0}: {1}".format(site, e))
-            return { 'site': site, 'status' : None, 'headers' : None, 'error' : type(e).__name__ }
+            return { 'site': site, 'status' : None, 'headers' : None, 'result' : type(e).__name__ }
 
     @staticmethod
     async def __get_all_site_response_headers_async(sites, timeout):
